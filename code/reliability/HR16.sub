@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#SBATCH --nodes=1
+
+#SBATCH --ntasks=1
+
+#SBATCH --cpus-per-task=1
+
+#SBATCH --time=72:00:00
+
+module load singularity-3.8.2
+
+singularity exec /home/data/NDClab/tools/containers/R-4.2.2A/R-4.2.2A.simg Rscript hitRate_rel_16.R

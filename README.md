@@ -1,44 +1,34 @@
-# [project name]
+# Memory-Bias for errors mini
 
 ## Project Goal
 :point_right: Replace this text with a pithy description of the goal of the data analysis project.
 
 
 ## Background & Design
-:point_right: Replace this text with a slightly longer (but still only max 250 words) description of the project background and its design. 
+Stronger error monitoring is linked to social anxiety (SA). However, it is not understood why this is the case. One hypothesis is that stronger error monitoring could strengthen encoding of errors or their context (e.g., social cues in the environment). As encoding of errors or incidental social cues cannot be studied by traditional error monitoring tasks, we developed a novel paradigm to test these ideas. While EEG data was being collected, 54 participants completed a novel Face-Flanker task, involving presentation of task-unrelated, trial-unique faces behind target/flanker arrows on each trial. Following the task, a surprise memory test was used to evaluate incidental learning on error trials. During the subsequent surprise memory test, higher SA was associated with better recognition memory for faces originally appearing on error (vs. correct) trials (p < 0.01). During the flanker, individuals higher in SA showed greater error-related theta synchrony over MFC (p = .05), as well as between MFC and sensory (visual) cortex (p = .02). Crucially, greater error-related theta synchrony between MFC and sensory (visual) cortex during the flanker was correlated with subsequent increases in recognition memory for faces from error (vs. correct) trials (p = .03). Our findings not only suggest higher SA individuals exhibit better incidental encoding of social stimuli on error (vs. correct) trials, but this behavioral phenomenon may be driven by error-related dynamics within the theta band. Results demonstrate the potential of a novel paradigm to elucidate mechanisms underlying the link between error monitoring and SA.
 
 
 ## Roadmap
-:point_right: Insert graphic of planned project releases. [This site](https://app.diagrams.net/) allows you to build a graphic that is connected to GitHub, so that changes you make are treated as GitHub commits.
-
+Release 1: anticipated Q2 2023
 
 ## Contents
-:point_right: This section should introduce the content that is published on `main`. Example:
 
 
-#### 2021-07-01 SPR Poster
-This is a description of the poster. There is a matching folder in the repo.
-
-:point_right: When you first set up this readme file, you might replace everything under "Contents" here with something like "Watch for our first release!"
-
+#### 2023-05-23 ACBM Talk 
+Here is the [link](https://drive.google.com/file/d/1zIb4QE5jjF3TKIrxqnpODt0Fw8vVJEYO/view?usp=sharing) to the PDF file of the talk given by Kianoosh Hosseini at ACBM 2023 conference at NIH: 
 
 ## Work in Development
 This `main` branch contains completed releases for this project. For all work-in-progress, please switch over to the `dev` branches.
 
-:point_right: Keep the "Work in Development" text above as the default NDCLab "blurb" to help visitors navigate the repo. But delete this note before publishing the readme file.
-
 
 ## Contributors
-| Role | Name |
+| Name | Role |
 | ---  | ---  |
-| add role | insert team member(s) |
-| add role | insert team member(s) |
-| add role | insert team member(s) |
+| Kianoosh Hosseini | Project lead |
+| George Buzzell | Guidance |
 
 Learn more about us [here](https://www.ndclab.com/people).
 
 
 ## Contributing
 If you are interested in contributing, please read our [CONTRIBUTING.md](CONTRIBUTING.md) file.
-
-:point_right: Keep the "Contributing" text above as the default NDCLab "blurb" to help visitors navigate the repo. But delete this note before publishing the readme file.

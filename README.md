@@ -1,7 +1,10 @@
 # Memory-Bias for errors mini
 
 ## Project Goal
-:point_right: Replace this text with a pithy description of the goal of the data analysis project.
+In this study, we aimed to determine if …
+* Individuals high in SA exhibit greater recognition memory performance of error-related information
+* Greater recognition memory performance of error-related information will be associated with greater error monitoring at the time of encoding.
+
 
 
 ## Background & Design
@@ -15,7 +18,7 @@ Release 1: anticipated Q2 2023
 
 
 #### 2023-05-23 ACBM Talk 
-Here is the [link](https://drive.google.com/file/d/1zIb4QE5jjF3TKIrxqnpODt0Fw8vVJEYO/view?usp=sharing) to the PDF file of the talk given by Kianoosh Hosseini at ACBM 2023 conference at NIH: 
+Here is the [link](https://docs.google.com/presentation/d/1z9SERezftPV7y7T_uN_QCYxN2RafYbgc/edit?usp=sharing&ouid=102107630435747330611&rtpof=true&sd=true) to the MS PPT file of the talk given by Kianoosh Hosseini at ACBM 2023 conference at NIH. 
 
 ## Work in Development
 This `main` branch contains completed releases for this project. For all work-in-progress, please switch over to the `dev` branches.

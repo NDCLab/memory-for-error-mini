@@ -15,11 +15,9 @@ save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivati
 %plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/MFC/250/1/';
 plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/MFC/250/mfc_cluster_time_window0_250/';
 
-%plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/MFC/500/1/';
-%plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/MFC/500/cluster/';
 
 %plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/posterior/250/cluster/';
-%plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/posterior/500/cluster/';
+
 
 
 % 3. Set EEGLab path
@@ -39,7 +37,7 @@ ConditionNames = {'Incong error response' 'Incong correct response'}; %If restin
 TF_bln = 1; %0=no, 1=yes
 
 % 8. Did you calculate ITPS and want it compiled and plotted?
-ITPS_calc = 1; %0=no, 1=yes
+ITPS_calc = 0; %0=no, 1=yes
 % 8a. Was ITPS baseline corrected? 
 ITPS_bln =1; %0=no, 1=yes
 
@@ -49,7 +47,7 @@ ICPS_calc = 0; %0=no, 1=yes
 ICPS_bln = 1; %0=no, 1=yes
 
 % 10. Did you calculate wPLI and want it compiled and plotted?
-wPLI_calc = 0; %0=no, 1=yes
+wPLI_calc = 1; %0=no, 1=yes
 % 10a. Was wPLI baseline corrected? 
 wPLI_bln = 1; %0=no, 1=yes
 
@@ -58,23 +56,20 @@ Downsample = 1; %0=no; 1=yes
 
 %% Settings for Time Frequency Surface Plots
 % 12. What time period (e.g., epoch length) would you like plotted on the x axis?
-time_window_surface = [-1000 2000]; 
+time_window_surface = [-1000 1000]; 
 % 13. What frequency range would you like plotted on the y axis?
-freq_window_surface = [1 30]; 
+freq_window_surface = [1 12]; 
 
 % 14. Choose which channels to plot for TF surface. (If more than one electrode, then those electrodes will be averaged).
-% Theta (4-7 Hz); elecs [1 2 34 33]; time [0-250]
-% Theta (4-7 Hz); elecs [1 2 34 33]; time [250-500]
-% Theta (4-7 Hz); elecs [22 53 24 55]; time [0-250]
-% Theta (4-7 Hz); elecs [22 53 24 55]; time [250-500]
+% Theta (4-7 Hz); elecs [1 2 34 33]; time [0-250] || MFC
+% Theta (4-7 Hz); elecs [22 53 24 55]; time [0-250] || posterior
+
 %chans2plot_TF = {'1'};  % MFC 1
-%chans2plot_TF = {'33'}; % MFC 33
 chans2plot_TF = {'1' '2' '34' '33'}; %MFC_cluster
 %chans2plot_TF = {'22' '53' '24' '55'}; % posterior
 
 % 15. Choose which channels to plot for ITPS surface. (If more than one electrode, then those electrodes will be averaged).
-%chans2plot_ITPS =  {'1'};  
-%chans2plot_ITPS =  {'33'};  
+%chans2plot_ITPS =  {'1'};    
 chans2plot_ITPS =  {'1' '2' '34' '33'};  
 %chans2plot_ITPS = {'22' '53' '24' '55'};
 
@@ -86,11 +81,12 @@ Seed = {'1'};
 chans2plot_ICPSwpli = {'22' '53' '24' '55'}; % posterior
 
 
+
 %% Settings for Topo Plots
 % 18. Choose what time period to average over for the topo plot. NOTE: It
 % is probably advantageous to examine the TF surfaces first before choosing this time period.
 time_window_for_topo = [0 250]; 
-%time_window_for_topo = [250 500]; 
+
 % 19. Choose what frequency range to average over for the topo plot. NOTE:
 %This is probably an apriori decision based on hypotheses.
 freq_window_for_topo = [4 7]; % Theta

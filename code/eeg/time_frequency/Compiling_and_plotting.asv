@@ -12,6 +12,16 @@ data_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivati
 % where the .mat files are stored.
 save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/';
 
+%plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/MFC/250/1/';
+plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/MFC/250/mfc_cluster_time_window0_250/';
+
+%plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/MFC/500/1/';
+%plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/MFC/500/cluster/';
+
+%plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/posterior/250/cluster/';
+%plot_save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/plots/theta/posterior/500/cluster/';
+
+
 % 3. Set EEGLab path
 addpath(genpath('/Users/kihossei/Documents/GitHub/memory-for-error-mini/code/eeg/eeglab2022.1'));
 
@@ -48,36 +58,43 @@ Downsample = 1; %0=no; 1=yes
 
 %% Settings for Time Frequency Surface Plots
 % 12. What time period (e.g., epoch length) would you like plotted on the x axis?
-time_window_surface = [-1000 2000]; 
+time_window_surface = [-1000 1000]; 
 % 13. What frequency range would you like plotted on the y axis?
-freq_window_surface = [1 30]; 
+freq_window_surface = [1 12]; 
 
 % 14. Choose which channels to plot for TF surface. (If more than one electrode, then those electrodes will be averaged).
-chans2plot_TF = {'1'}; 
-%chans2plot_TF = {'33'};
-%chans2plot_TF = {'1' '2' '5' '37' '34'};
-%chans2plot_TF = {'25' };
+% Theta (4-7 Hz); elecs [1 2 34 33]; time [0-250]
+% Theta (4-7 Hz); elecs [1 2 34 33]; time [250-500]
+% Theta (4-7 Hz); elecs [22 53 24 55]; time [0-250]
+% Theta (4-7 Hz); elecs [22 53 24 55]; time [250-500]
+%chans2plot_TF = {'1'};  % MFC 1
+%chans2plot_TF = {'33'}; % MFC 33
+chans2plot_TF = {'1' '2' '34' '33'}; %MFC_cluster
+%chans2plot_TF = {'22' '53' '24' '55'}; % posterior
 
 % 15. Choose which channels to plot for ITPS surface. (If more than one electrode, then those electrodes will be averaged).
-chans2plot_ITPS =  {'1'};  
+%chans2plot_ITPS =  {'1'};  
 %chans2plot_ITPS =  {'33'};  
-%chans2plot_ITPS =  {'1' '2' '5' '37' '34'};  
-%chans2plot_ITPS = {'25' };
+chans2plot_ITPS =  {'1' '2' '34' '33'};  
+%chans2plot_ITPS = {'22' '53' '24' '55'};
 
 % Choose plotting parameters for ICPS and wPLI 
 % 16. If you have used an all-to-all approach, you will need to designate a seed for plotting. 
 Seed = {'1'};
 % 17. Choose which channels to plot. NOTE: This should not include the seed. 
-chans2plot_ICPSwpli =  {'4' '6' '7' '9' '36' '39' '40' '42'};  
+%chans2plot_ICPSwpli =  {'1' '2' '34' '33'};  %MFC_cluster
+chans2plot_ICPSwpli = {'22' '53' '24' '55'}; % posterior
+chans2plot_ICPSwpli = {'21' '25' '20'}; %temporal -> exploratory
 
 
 %% Settings for Topo Plots
 % 18. Choose what time period to average over for the topo plot. NOTE: It
 % is probably advantageous to examine the TF surfaces first before choosing this time period.
-time_window_for_topo = [500 1000]; 
+time_window_for_topo = [0 250]; 
+%time_window_for_topo = [250 500]; 
 % 19. Choose what frequency range to average over for the topo plot. NOTE:
 %This is probably an apriori decision based on hypotheses.
-freq_window_for_topo = [13 25]; 
+freq_window_for_topo = [4 7]; % Theta
 
 % File list
 cd(data_location)
@@ -507,6 +524,10 @@ if wPLI_calc ==1
 end
 
 
+%% Kia: Updating ConditionNames as I need to plot the difference in addition to incong error and incong correct.
+
+ConditionNames = {'Incong error response' 'Incong correct response' 'Difference (error - correct)'}; 
+
 %% %%%%%%%%%%%%%%% PLOT TF %%%%%%%%%%%%%%%%%%%%%%%
 %If you do not want to re-compile your data everytime, you can just load
 %the _allsubs.mat file before continuing to plot. Just make sure that you
@@ -514,10 +535,6 @@ end
 
 
 eeglab 
-
-% time_window_for_topo = [0 250]; 
-% freq_window_for_topo = [4 7]; 
-% chans2plot_TF = {'22' '53' '24' '55'}; 
 
 for cond=1:length(ConditionNames)
     %pull out time, frequency, and channel indices for surface plots
@@ -534,19 +551,22 @@ for cond=1:length(ConditionNames)
     end
     
     %Time Frequency surface
-    TF_forTFsurface = squeeze(mean(mean(TF_allsubs(:,cond,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5));
+    if cond < 3
+        TF_forTFsurface = squeeze(mean(mean(TF_allsubs(:,cond,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5));
+    elseif cond == 3
+        TF_forTFsurface = squeeze(mean(mean(TF_allsubs(:,1,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5)) - squeeze(mean(mean(TF_allsubs(:,2,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5));
+    end
     
     %find bounds for plot
     if cond==1
     %clim_min = min(TF_forTFsurface(:));
     clim_max = max(TF_forTFsurface(:));
     
-    %clim_surface = [-clim_max clim_max];
-    clim_surface = [-5 5];
+    clim_surface = [-clim_max clim_max];
     end
     
     %Plot TF
-    figure;
+    f4 = figure;
     hold on;
     if Downsample ==1
         contourf(ds_time(time_surface_idx(1,1):time_surface_idx(2,1)), frequency(freq_surface_idx(1,1):freq_surface_idx(2,1)), TF_forTFsurface, 20,'linecolor','none');
@@ -556,6 +576,7 @@ for cond=1:length(ConditionNames)
         set(findall(gcf,'-property','FontSize'),'FontSize',14)
         set(findall(gcf,'-property','fontname'),'fontname','arial')
         cbar('vert',0, clim_surface, 5);
+        
     elseif Downsample ==0
         contourf(time(time_surface_idx(1,1):time_surface_idx(2,1)), frequency(freq_surface_idx(1,1):freq_surface_idx(2,1)), TF_forTFsurface, 20,'linecolor','none');
         set(gca, 'ylim', freq_window_surface, 'xlim', time_window_surface, 'clim', clim_surface);
@@ -564,8 +585,17 @@ for cond=1:length(ConditionNames)
         set(findall(gcf,'-property','FontSize'),'FontSize',14)
         set(findall(gcf,'-property','fontname'),'fontname','arial')
         cbar('vert',0, clim_surface, 5);
+        
     end
     
+    if cond == 1
+        saveas(f4,[plot_save_location 'error_tf.png'])
+    elseif cond ==2
+        saveas(f4,[plot_save_location 'correct_tf.png'])
+    elseif cond ==3
+        saveas(f4,[plot_save_location 'diff_tf.png'])
+    end
+
     %pull out time, frequency, and channel indices for surface plots
     freq_topo_idx = dsearchn(frequency',freq_window_for_topo');
     if Downsample ==1
@@ -576,24 +606,37 @@ for cond=1:length(ConditionNames)
 
     
     %Topo plot
-    TF_fortopo = squeeze(mean(mean(mean(TF_allsubs(:,cond,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4));
+    if cond < 3
+        TF_fortopo = squeeze(mean(mean(mean(TF_allsubs(:,cond,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4));
+    elseif cond == 3
+        TF_fortopo = squeeze(mean(mean(mean(TF_allsubs(:,1,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4)) - squeeze(mean(mean(mean(TF_allsubs(:,2,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4)); % difference
+    end
 
+    
     %find bounds for plot
     if cond==1
     %clim_min = min(TF_forTFsurface(:));
-    clim_max = max(abs(TF_fortopo(:)));
-    
+    %clim_max = max(abs(TF_fortopo(:)));
+    clim_max = 6;
     clim_topo = [-clim_max clim_max];
     end
     
     %Plot
-    figure;
+    f3 = figure;
     hold on;
     topoplot(TF_fortopo,channel_location,'plotrad',.55,'maplimits',clim_topo,'electrodes','on','numcontour',0);
     title(['Time Frequency ' ConditionNames(cond)]);
     set(gca, 'FontName','Arial', 'FontSize', 14)
-   
+
+    if cond == 1
+        saveas(f3,[plot_save_location 'error_tf_topo.png'])
+    elseif cond ==2
+        saveas(f3,[plot_save_location 'correct_tf_topo.png'])
+    elseif cond ==3
+        saveas(f3,[plot_save_location 'diff_tf_topo.png'])
+    end
 end %end loop through 
+
 
 
 
@@ -606,7 +649,7 @@ end %end loop through
 eeglab 
 
 if ITPS_calc==1
-    for cond=1:length(Conds)
+    for cond=1:length(ConditionNames)
         %pull out time, frequency, and channel indices for surface plots
         freq_surface_idx = dsearchn(frequency',freq_window_surface');
         if Downsample ==1
@@ -621,7 +664,11 @@ if ITPS_calc==1
         end
         
         %Time Frequency surface
-        ITPS_forTFsurface = squeeze(mean(mean(ITPS_allsubs(:,cond,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5));
+        if cond < 3
+            ITPS_forTFsurface = squeeze(mean(mean(ITPS_allsubs(:,cond,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5));
+        elseif cond == 3
+            ITPS_forTFsurface = squeeze(mean(mean(ITPS_allsubs(:,1,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5)) - squeeze(mean(mean(ITPS_allsubs(:,2,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5));
+        end
         
         %find bounds for plot
         if cond==1
@@ -632,7 +679,7 @@ if ITPS_calc==1
         end
     
         %Plot TF
-        figure;
+        f1 = figure;
         hold on;
         if Downsample ==1
             contourf(ds_time(time_surface_idx(1,1):time_surface_idx(2,1)), frequency(freq_surface_idx(1,1):freq_surface_idx(2,1)), ITPS_forTFsurface, 20,'linecolor','none');
@@ -651,6 +698,13 @@ if ITPS_calc==1
             set(findall(gcf,'-property','fontname'),'fontname','arial')
             cbar('vert',0, clim_surface, 5);
         end
+        if cond == 1
+            saveas(f1,[plot_save_location 'error_itps.png'])
+        elseif cond ==2
+            saveas(f1,[plot_save_location 'correct_itps.png'])
+        elseif cond ==3
+            saveas(f1,[plot_save_location 'diff_itps.png'])
+        end
         
         %pull out time, frequency, and channel indices for surface plots
         freq_topo_idx = dsearchn(frequency',freq_window_for_topo');
@@ -662,8 +716,13 @@ if ITPS_calc==1
         
         
         %Topo plot
-        ITPS_fortopo = squeeze(mean(mean(mean(ITPS_allsubs(:,cond,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4));
-        
+        if cond < 3
+            ITPS_fortopo = squeeze(mean(mean(mean(ITPS_allsubs(:,cond,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4));
+        elseif cond == 3
+            ITPS_fortopo = squeeze(mean(mean(mean(ITPS_allsubs(:,1,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4)) - squeeze(mean(mean(mean(ITPS_allsubs(:,2,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4));
+        end
+
+
          %find bounds for plot
         if cond==1
         %clim_min = min(TF_forTFsurface(:));
@@ -674,11 +733,19 @@ if ITPS_calc==1
         
         
         %Plot
-        figure;
+        f2= figure;
         hold on;
         topoplot(ITPS_fortopo,channel_location,'plotrad',.55,'maplimits',clim_topo,'electrodes','on','numcontour',0);
         title(['ITPS ' ConditionNames(cond)]);
         set(gca, 'FontName','Arial', 'FontSize', 14)
+       
+        if cond == 1
+            saveas(f2,[plot_save_location 'error_itps_topo.png'])
+        elseif cond ==2
+            saveas(f2,[plot_save_location 'correct_itps_topo.png'])
+        elseif cond ==3
+            saveas(f2,[plot_save_location 'diff_itps_topo.png'])
+        end
         
     end %end loop through
 else
@@ -693,7 +760,7 @@ end
 
 eeglab 
 if ICPS_calc==1
-    for cond=1:length(Conds)
+    for cond=1:length(ConditionNames)
            %pull out time, frequency, and channel indices for surface plots
         freq_surface_idx = dsearchn(frequency',freq_window_surface');
         if Downsample ==1
@@ -772,7 +839,7 @@ else
 end
 
 if wPLI_calc==1
-    for cond=1:length(Conds)
+    for cond=1:length(ConditionNames)
         %pull out time, frequency, and channel indices for surface plots
         freq_surface_idx = dsearchn(frequency',freq_window_surface');
         if Downsample ==1
@@ -787,9 +854,11 @@ if wPLI_calc==1
         end
         
         %Time Frequency surface
-        Elecs_idx=3
-        wpli_forTFsurface = squeeze(mean(mean(wpli_allsubs(:,cond,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5));
-        
+        if cond < 3
+             wpli_forTFsurface = squeeze(mean(mean(wpli_allsubs(:,cond,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5));
+        elseif cond == 3
+            wpli_forTFsurface = squeeze(mean(mean(wpli_allsubs(:,1,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5)) - squeeze(mean(mean(wpli_allsubs(:,2,freq_surface_idx(1,1):freq_surface_idx(2,1),time_surface_idx(1,1):time_surface_idx(2,1),Elecs_idx),1),5));
+        end
 
         
         %find bounds for plot
@@ -801,7 +870,7 @@ if wPLI_calc==1
         end
     
         %Plot TF
-        figure;
+        f5 = figure;
         hold on;
         if Downsample ==1
             contourf(ds_time(time_surface_idx(1,1):time_surface_idx(2,1)), frequency(freq_surface_idx(1,1):freq_surface_idx(2,1)), wpli_forTFsurface, 20,'linecolor','none');
@@ -820,35 +889,54 @@ if wPLI_calc==1
             set(findall(gcf,'-property','fontname'),'fontname','arial')
             cbar('vert',0, clim_surface, 5);
         end
+
+        if cond == 1
+            saveas(f5,[plot_save_location 'error_wpli.png'])
+        elseif cond ==2
+            saveas(f5,[plot_save_location 'correct_wpli.png'])
+        elseif cond ==3
+            saveas(f5,[plot_save_location 'diff_wpli.png'])
+        end
+
+        %pull out time, frequency, and channel indices for surface plots
+        freq_topo_idx = dsearchn(frequency',freq_window_for_topo');
+        if Downsample ==1
+            time_topo_idx = dsearchn(ds_time',time_window_for_topo');
+        elseif Downsample ==0
+            time_topo_idx = dsearchn(time',time_window_for_topo');
+        end
         
-%         %pull out time, frequency, and channel indices for surface plots
-%         freq_topo_idx = dsearchn(frequency',freq_window_for_topo');
-%         if Downsample ==1
-%             time_topo_idx = dsearchn(ds_time',time_window_for_topo');
-%         elseif Downsample ==0
-%             time_topo_idx = dsearchn(time',time_window_for_topo');
-%         end
-%         
-%         
-%         %Topo plot
-%         wpli_fortopo = squeeze(mean(mean(mean(wpli_allsubs(:,cond,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4));
-%         
-%          %find bounds for plot
-%         if cond==1
-%         %clim_min = min(TF_forTFsurface(:));
-%         clim_max = max(wpli_fortopo(:));
-%     
-%         clim_topo = [-clim_max clim_max];
-%         end
-%         
         
-%         %Plot
-%         figure;
-%         hold on;
-%         topoplot(wpli_fortopo,channel_location,'plotrad',.55,'maplimits',clim_topo,'electrodes','on','numcontour',0);
-%         title(['wPLI ' ConditionNames(cond)]);
-%         set(gca, 'FontName','Arial', 'FontSize', 14)
+        %Topo plot
+        if cond < 3
+             wpli_fortopo = squeeze(mean(mean(mean(wpli_allsubs(:,cond,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4));
+        elseif cond == 3
+            wpli_fortopo = squeeze(mean(mean(mean(wpli_allsubs(:,1,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4)) - squeeze(mean(mean(mean(wpli_allsubs(:,2,freq_topo_idx(1,1):freq_topo_idx(2,1),time_topo_idx(1,1):time_topo_idx(2,1),:),1),3),4));
+        end
+
+       
+         %find bounds for plot
+        if cond==1
+        %clim_min = min(TF_forTFsurface(:));
+        clim_max = max(wpli_fortopo(:));
+    
+        clim_topo = [-clim_max clim_max];
+        end
         
+        
+        %Plot
+        f6 = figure;
+        hold on;
+        topoplot(wpli_fortopo,channel_location,'plotrad',.55,'maplimits',clim_topo,'electrodes','on','numcontour',0);
+        title(['wPLI ' ConditionNames(cond)]);
+        set(gca, 'FontName','Arial', 'FontSize', 14)
+        if cond == 1
+            saveas(f6,[plot_save_location 'error_wpli_topo.png'])
+        elseif cond ==2
+            saveas(f6,[plot_save_location 'correct_wpli_topo.png'])
+        elseif cond ==3
+            saveas(f6,[plot_save_location 'diff_wpli_topo.png'])
+        end
     end %end loop through conditions
 else
 end

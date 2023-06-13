@@ -5,11 +5,7 @@ cluster = parcluster('local');
 
 % start matlabpool with max workers set in the slurm file
 parpool(cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This script was created by George Buzzell for the NDC Lab EEG Training
-% Workshop on 02/22. This script uses parts of the "set up" structure from
-% the MADE preprocessing pipeline (Debnath, Buzzell, et. al., 2020)
+
 
 clear % clear matlab workspace
 clc % clear matlab command window

@@ -1,7 +1,4 @@
 
-% This script was created by George Buzzell for the NDC Lab EEG Training
-% Workshop on 02/22. This script uses parts of the "set up" structure from
-% the MADE preprocessing pipeline (Debnath, Buzzell, et. al., 2020)
 
 clear % clear matlab workspace
 clc % clear matlab command window
@@ -64,10 +61,10 @@ subjects_id = new_subjects_id;
 
 
 %define electrodes average over for component
-compCluster = [17, 18, 19, 49, 40]; 
+compCluster = [1, 2, 34, 33]; 
 
 %define timeRange to average over for component 
-compTime = [300 400]; 
+compTime = [0 100]; 
 
 %load the mat file that has the erps and subject list
 load([output_location filesep 'mini_mfe_erpDat_resp.mat'])
@@ -133,10 +130,10 @@ output(:,3) = resp_incon_corr_avgTimeClust;
 output(:,4) = resp_incon_error_avgTimeClust_diff;
 
 output = table(output(:,1), output(:,2), output(:,3), output(:,4));
-output.Properties.VariableNames = {'id','PE_error','PE_correct','deltaPE'};
+output.Properties.VariableNames = {'id','ERN','CRN','deltaERN'};
 
 %write component means to disk
-writetable(output, [output_location filesep 'mini_mfe_erpDat_PEB3_compMeans.csv'])
+writetable(output, [output_location filesep 'mini_mfe_erpDat_ERN_compMeans.csv'])
 
 
 

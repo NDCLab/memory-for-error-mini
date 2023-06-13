@@ -4,14 +4,11 @@
 % Last Update: 03/13/2023 
 
 % Theta (4-7 Hz); elecs [1 2 34 33]; time [0-250]
-% Theta (4-7 Hz); elecs [1 2 34 33]; time [250-500]
-% Theta (4-7 Hz); elecs [22 53 24 55]; time [0-250]
-% Theta (4-7 Hz); elecs [22 53 24 55]; time [250-500]
 
-% Alpha (8-12 Hz); elecs [1 2 34 33]; time [0-250]
-% Alpha (8-12 Hz); elecs [1 2 34 33]; time [250-500]
-% Alpha (8-12 Hz); elecs [22 53 24 55]; time [0-250]
-% Alpha (8-12 Hz); elecs [22 53 24 55]; time [250-500]
+% Theta (4-7 Hz); elecs [22 53 24 55]; time [0-250]
+
+
+
 
 clear
 clc;
@@ -21,25 +18,12 @@ data_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivati
 
 %% Save Location - this is the location where you would like your csv files to be stored. 
 %save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/MFC/250';
-%save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/MFC/500';
-save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/3_18_20/250';
 
 %save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/posterior/250';
-%save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/posterior/500';
-
-%save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/MFC/250';
-%save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/MFC/500';
-
-%save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/posterior/250';
-%save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/posterior/500';
 
 %save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/wPLI/MFC';
-%save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/wPLI/MFC';
 
 %save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/wPLI/posterior';
-%save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/wPLI/21_25';
-%save_location = '/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/wPLI/posterior';
-
 
 %% Load .mat files
 cd (data_location)
@@ -60,40 +44,34 @@ ConditionNames = {'Incong error response' 'Incong correct response'}; %If restin
 Downsample = 1; %0=no; 1=yes
 
 % Theta (4-7 Hz); elecs [1 2 34 33]; time [0-250] - done
-% Theta (4-7 Hz); elecs [1 2 34 33]; time [250-500] - done
-% Theta (4-7 Hz); elecs [22 53 24 55]; time [0-250] - done
-% Theta (4-7 Hz); elecs [22 53 24 55]; time [250-500] - done
 
-% Alpha (8-12 Hz); elecs [1 2 34 33]; time [0-250] - done
-% Alpha (8-12 Hz); elecs [1 2 34 33]; time [250-500] - done
-% Alpha (8-12 Hz); elecs [22 53 24 55]; time [0-250] - done
-% Alpha (8-12 Hz); elecs [22 53 24 55]; time [250-500] - done
+% Theta (4-7 Hz); elecs [22 53 24 55]; time [0-250] - done
+
 
 
 % 4. Choose which channels to plot for TF surface. (If more than one electrode, then those electrodes will be averaged).
 %chans2extract_TF = {'1' '2' '34' '33'};  
 %chans2extract_TF = {'22' '53' '24' '55'}; 
-chans2extract_TF = {'3' '18' '20'}; % exploratory
 
 % 5. Choose which channels to plot for ITPS surface. (If more than one electrode, then those electrodes will be averaged).
 %chans2extract_ITPS =  {'1' '2' '34' '33'};  
 %chans2extract_ITPS =  {'22' '53' '24' '55'};  
-chans2extract_ITPS =  {'3' '18' '20'};  % exploratory
+
  
 % 6. Choose which channels to extract for wPLI surface. 
 %chans2extract_ICPSwpli =  {'4' '6' '36' '39'};  % MFC
 %chans2extract_ICPSwpli =  {'22' '53' '24' '55'};  % Posterior
-chans2extract_ICPSwpli =  {'21' '25'};  % exploratory
+
 
 % 7. Choose what time period to average over for the topo plot. NOTE: It
 % is probably advantageous to examine the TF surfaces first before choosing this time period.
 time_window_for_csv = [0 250]; 
-%time_window_for_csv = [250 500];
+
 
 % 8. Choose what frequency range to average over for the topo plot. NOTE:
 %This is probably an apriori decision based on hypotheses.
 freq_window_for_csv = [4 7]; 
-%freq_window_for_csv = [8 12]; 
+
 
 %% File list
 cd('/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/main') % location of the files that are outputs of the 'mainscript_calculate_TF_ITPS_ICPS' script!

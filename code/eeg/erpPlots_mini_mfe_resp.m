@@ -1,7 +1,4 @@
 
-% This script was created by George Buzzell for the NDC Lab EEG Training
-% Workshop on 02/22. This script uses parts of the "set up" structure from
-% the MADE preprocessing pipeline (Debnath, Buzzell, et. al., 2020)
 
 clear % clear matlab workspace
 clc % clear matlab command window
@@ -90,12 +87,12 @@ for i=1:size(allData,4)
 end
 
 %% select channel(s) to plot
-% 1, 2, 5, 37, 34
+
 
 %clusters
- %chan = (newData(:,:,[1, 2, 5, 37, 34],:)); 
- %chan = (newData(:,:,[2, 1, 33, 34],:));
- chan = (newData(:,:,[17, 18, 49, 19, 40],:)); 
+ 
+ chan = (newData(:,:,[2, 1, 33, 34],:));
+ 
 
 
 
@@ -204,7 +201,7 @@ condition_A_Mean = squeeze(mean(condition_A,1)); %
 condition_B_Mean = squeeze(mean(condition_B,1)); % 
 
 %compute difference topo
-con_A_minus_B_Mean = condition_A_Mean - condition_B_Mean; %incon-corr - incong-error
+con_A_minus_B_Mean = condition_A_Mean - condition_B_Mean; %incon-error - incong-corr
 
 %plot topos
 figure
@@ -232,7 +229,7 @@ outputHeader = {'id, ERN, CRN, deltaERN'};
 dlmwrite(strcat('erpCore_compMeans_example_', date, '.csv'), outputHeader, 'delimiter', '', '-append');
 
 %define electrodes average over for component
-compCluster = [17 21 22]; 
+compCluster = [1 2 34 33]; 
 
 %define timeRange to average over for component 
 compTime = [0 100]; 

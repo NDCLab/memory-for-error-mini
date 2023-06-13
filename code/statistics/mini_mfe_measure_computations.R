@@ -6,10 +6,10 @@
 library(tidyverse)
 library(dplyr)
 library(stringr)
-library(psycho) # to compute d' measures, etc.
+library(psycho)
 
 #Working directory should be the Psychopy experiment directory.
-proje_wd <- "/Users/kihossei/Documents/GitHub/memory-for-error-mini/materials/task/mini_mfe"
+proje_wd <- "/Users/kihossei/Documents/GitHub/memory-for-error-mini/materials/mini_mfe"
 setwd(proje_wd)
 
 input_raw_path <- paste(proje_wd, "data", sep ="/", collapse = NULL) # input data directory
@@ -481,32 +481,7 @@ for (subject in 1:length(raw_datafiles_list)){
   }
 } # Closing the loop for each participant
 
-################# Computing d prime using Psycho library #################################
-dprime.stats <- psycho::dprime(as.numeric(main_df$hit_num), as.numeric(main_df$false_alrams_num), as.numeric(main_df$miss_num), as.numeric(main_df$corr_rej_num))
-main_df$dprime <- dprime.stats$dprime
 
-d_prime_error.stats <- psycho::dprime(as.numeric(main_df$incong_error_hit_num), as.numeric(main_df$false_alrams_num), as.numeric(main_df$incong_error_miss_num), as.numeric(main_df$corr_rej_num))
-main_df$d_prime_error <- d_prime_error.stats$dprime
-
-pre_d_prime_error.stats <- psycho::dprime(as.numeric(main_df$incong_pre_error_hit_num), as.numeric(main_df$false_alrams_num), as.numeric(main_df$incong_pre_error_miss_num), as.numeric(main_df$corr_rej_num))
-main_df$pre_d_prime_error <- pre_d_prime_error.stats$dprime
-
-post_d_prime_error.stats <- psycho::dprime(as.numeric(main_df$incong_post_error_hit_num), as.numeric(main_df$false_alrams_num), as.numeric(main_df$incong_post_error_miss_num), as.numeric(main_df$corr_rej_num))
-main_df$post_d_prime_error <- post_d_prime_error.stats$dprime
-
-d_prime_correct.stats <- psycho::dprime(as.numeric(main_df$incong_correct_hit_num), as.numeric(main_df$false_alrams_num), as.numeric(main_df$incong_correct_miss_num), as.numeric(main_df$corr_rej_num))
-main_df$d_prime_correct <- d_prime_correct.stats$dprime
-
-pre_d_prime_correct.stats <- psycho::dprime(as.numeric(main_df$incong_pre_correct_hit_num), as.numeric(main_df$false_alrams_num), as.numeric(main_df$incong_pre_correct_miss_num), as.numeric(main_df$corr_rej_num))
-main_df$pre_d_prime_correct <- pre_d_prime_correct.stats$dprime
-
-post_d_prime_correct.stats <- psycho::dprime(as.numeric(main_df$incong_post_correct_hit_num), as.numeric(main_df$false_alrams_num), as.numeric(main_df$incong_post_correct_miss_num), as.numeric(main_df$corr_rej_num))
-main_df$post_d_prime_correct <- post_d_prime_correct.stats$dprime
-
-for (ee in 1:nrow(main_df)){
-  main_df$d_prime_error_minus_correct[ee] <- main_df$d_prime_error[ee] - main_df$d_prime_correct[ee]
-  main_df$d_prime_post_error_minus_correct[ee] <- main_df$post_d_prime_error[ee] - main_df$post_d_prime_correct[ee]
-}
 for (ee in 1:nrow(main_df)){
   main_df$hitRate_error_minus_correct[ee] <- main_df$error_hitRate[ee] - main_df$correct_hitRate[ee]
   main_df$hitRate_post_error_minus_correct[ee] <- main_df$post_error_hitRate[ee] - main_df$post_correct_hitRate[ee]
@@ -559,216 +534,8 @@ for (rr in 1:nrow(main_df)){
   }
 }
 
-### Loading EEG ERP data
-eeg_pea1 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/eeg_erp_output/mini_mfe_erpDat_PEA1_compMeans.csv")
-
-# Keeping the columns that we need!
-eeg_pea1 <- eeg_pea1[c("id", "PE_error", "PE_correct", "deltaPE")]
-
-# adding new columns to the "percent_mainDat" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_pea1, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$PEA1_error[rr] <- tempDat$PE_error
-    main_df$PEA1_correct[rr] <- tempDat$PE_correct
-    main_df$deltaPEA1[rr] <- tempDat$deltaPE
-  } else if (nrow(tempDat) == 0){
-    main_df$PEA1_error[rr] <- NA
-    main_df$PEA1_correct[rr] <- NA
-    main_df$deltaPEA1[rr] <- NA
-  }
-}
-
-### Loading EEG ERP data
-eeg_pea2 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/eeg_erp_output/mini_mfe_erpDat_PEA2_compMeans.csv")
-
-# Keeping the columns that we need!
-eeg_pea2 <- eeg_pea2[c("id", "PE_error", "PE_correct", "deltaPE")]
-
-# adding new columns to the "percent_mainDat" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_pea2, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$PEA2_error[rr] <- tempDat$PE_error
-    main_df$PEA2_correct[rr] <- tempDat$PE_correct
-    main_df$deltaPEA2[rr] <- tempDat$deltaPE
-  } else if (nrow(tempDat) == 0){
-    main_df$PEA2_error[rr] <- NA
-    main_df$PEA2_correct[rr] <- NA
-    main_df$deltaPEA2[rr] <- NA
-  }
-}
-
-### Loading EEG ERP data
-eeg_peb2 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/eeg_erp_output/mini_mfe_erpDat_PEB2_compMeans.csv")
-
-# Keeping the columns that we need!
-eeg_peb2 <- eeg_peb2[c("id", "PE_error", "PE_correct", "deltaPE")]
-
-# adding new columns to the "percent_mainDat" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_peb2, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$PEB2_error[rr] <- tempDat$PE_error
-    main_df$PEB2_correct[rr] <- tempDat$PE_correct
-    main_df$deltaPEB2[rr] <- tempDat$deltaPE
-  } else if (nrow(tempDat) == 0){
-    main_df$PEB2_error[rr] <- NA
-    main_df$PEB2_correct[rr] <- NA
-    main_df$deltaPEB2[rr] <- NA
-  }
-}
-
-### Loading EEG ERP data
-eeg_peb3 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/eeg_erp_output/mini_mfe_erpDat_PEB3_compMeans.csv")
-
-# Keeping the columns that we need!
-eeg_peb3 <- eeg_peb3[c("id", "PE_error", "PE_correct", "deltaPE")]
-
-# adding new columns to the "percent_mainDat" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_peb3, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$PEB3_error[rr] <- tempDat$PE_error
-    main_df$PEB3_correct[rr] <- tempDat$PE_correct
-    main_df$deltaPEB3[rr] <- tempDat$deltaPE
-  } else if (nrow(tempDat) == 0){
-    main_df$PEB3_error[rr] <- NA
-    main_df$PEB3_correct[rr] <- NA
-    main_df$deltaPEB3[rr] <- NA
-  }
-}
-
-### Loading EEG theta power data
-eeg_theta_power <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_theta_power <- eeg_theta_power[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "percent_mainDat" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_theta_power, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_theta_power[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_theta_power[rr] <- tempDat$incong_correct_theta_power
-    main_df$theta_power_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_theta_power[rr] <- NA
-    main_df$incong_correct_theta_power[rr] <- NA
-    main_df$theta_power_difference_score[rr] <- NA
-  }
-}
-
-### Loading EEG beta power data
-eeg_beta_power_500 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/beta500/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_beta_power_500 <- eeg_beta_power_500[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_beta_power_500, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_beta_power500[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_beta_power500[rr] <- tempDat$incong_correct_theta_power
-    main_df$beta_power_difference_score500[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_beta_power500[rr] <- NA
-    main_df$incong_correct_beta_power500[rr] <- NA
-    main_df$beta_power_difference_score500[rr] <- NA
-  }
-}
-
-### Loading EEG beta power data
-eeg_beta_power_1000 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/beta1000/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_beta_power_1000 <- eeg_beta_power_1000[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_beta_power_1000, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_beta_power1000[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_beta_power1000[rr] <- tempDat$incong_correct_theta_power
-    main_df$beta_power_difference_score1000[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_beta_power1000[rr] <- NA
-    main_df$incong_correct_beta_power1000[rr] <- NA
-    main_df$beta_power_difference_score1000[rr] <- NA
-  }
-}
-
-### Loading EEG beta power data
-eeg_beta_power_1500 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/beta1500/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_beta_power_1500 <- eeg_beta_power_1500[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_beta_power_1500, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_beta_power1500[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_beta_power1500[rr] <- tempDat$incong_correct_theta_power
-    main_df$beta_power_difference_score1500[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_beta_power1500[rr] <- NA
-    main_df$incong_correct_beta_power1500[rr] <- NA
-    main_df$beta_power_difference_score1500[rr] <- NA
-  }
-}
-
-### Loading EEG beta power data
-eeg_beta_power_2000 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/beta2000/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_beta_power_2000 <- eeg_beta_power_2000[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_beta_power_2000, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_beta_power2000[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_beta_power2000[rr] <- tempDat$incong_correct_theta_power
-    main_df$beta_power_difference_score2000[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_beta_power2000[rr] <- NA
-    main_df$incong_correct_beta_power2000[rr] <- NA
-    main_df$beta_power_difference_score2000[rr] <- NA
-  }
-}
 
 
-### Loading EEG TF ITPS data
-eeg_ITPS <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/ITPS.csv")
-
-# Keeping the columns that we need!
-eeg_ITPS <- eeg_ITPS[c("id", "incong_error_ITPS", "incong_correct_ITPS", "difference_score")]
-
-# adding new columns to the "percent_mainDat" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_ITPS, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_ITPS[rr] <- tempDat$incong_error_ITPS
-    main_df$incong_correct_ITPS[rr] <- tempDat$incong_correct_ITPS
-    main_df$ITPS_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_ITPS[rr] <- NA
-    main_df$incong_correct_ITPS[rr] <- NA
-    main_df$ITPS_difference_score[rr] <- NA
-  }
-}
 ##########################################################################################################################
 #################### Theta MFC
 ### Loading EEG Theta power data
@@ -792,26 +559,6 @@ for (rr in 1:nrow(main_df)){
   }
 }
 
-### Loading EEG Theta power data
-eeg_theta_power_mfc500 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/MFC/500/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_theta_power_mfc500 <- eeg_theta_power_mfc500[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_theta_power_mfc500, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_theta_power_mfc500[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_theta_power_mfc500[rr] <- tempDat$incong_correct_theta_power
-    main_df$theta_power_mfc500_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_theta_power_mfc500[rr] <- NA
-    main_df$incong_correct_theta_power_mfc500[rr] <- NA
-    main_df$theta_power_mfc500_difference_score[rr] <- NA
-  }
-}
 
 ### Loading EEG ITPS data
 eeg_theta_ITPS_mfc250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/MFC/250/ITPS.csv")
@@ -834,26 +581,7 @@ for (rr in 1:nrow(main_df)){
   }
 }
 
-### Loading EEG ITPS data
-eeg_theta_ITPS_mfc500 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/MFC/500/ITPS.csv")
 
-# Keeping the columns that we need!
-eeg_theta_ITPS_mfc500 <- eeg_theta_ITPS_mfc500[c("id", "incong_error_ITPS", "incong_correct_ITPS", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_theta_ITPS_mfc500, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_theta_ITPS_mfc500[rr] <- tempDat$incong_error_ITPS
-    main_df$incong_correct_theta_ITPS_mfc500[rr] <- tempDat$incong_correct_ITPS
-    main_df$theta_ITPS_mfc500_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_theta_ITPS_mfc500[rr] <- NA
-    main_df$incong_correct_theta_ITPS_mfc500[rr] <- NA
-    main_df$theta_ITPS_mfc500_difference_score[rr] <- NA
-  }
-}
 
 #################### Theta Posterior
 ### Loading EEG Theta power data
@@ -877,26 +605,7 @@ for (rr in 1:nrow(main_df)){
   }
 }
 
-### Loading EEG Theta power data
-eeg_theta_power_posterior500 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/posterior/500/theta_power.csv")
 
-# Keeping the columns that we need!
-eeg_theta_power_posterior500 <- eeg_theta_power_posterior500[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_theta_power_posterior500, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_theta_power_posterior500[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_theta_power_posterior500[rr] <- tempDat$incong_correct_theta_power
-    main_df$theta_power_posterior500_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_theta_power_posterior500[rr] <- NA
-    main_df$incong_correct_theta_power_posterior500[rr] <- NA
-    main_df$theta_power_posterior500_difference_score[rr] <- NA
-  }
-}
 
 ### Loading EEG ITPS data
 eeg_theta_ITPS_posterior250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/posterior/250/ITPS.csv")
@@ -919,240 +628,7 @@ for (rr in 1:nrow(main_df)){
   }
 }
 
-### Loading EEG ITPS data
-eeg_theta_ITPS_posterior500 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/posterior/500/ITPS.csv")
 
-# Keeping the columns that we need!
-eeg_theta_ITPS_posterior500 <- eeg_theta_ITPS_posterior500[c("id", "incong_error_ITPS", "incong_correct_ITPS", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_theta_ITPS_posterior500, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_theta_ITPS_posterior500[rr] <- tempDat$incong_error_ITPS
-    main_df$incong_correct_theta_ITPS_posterior500[rr] <- tempDat$incong_correct_ITPS
-    main_df$theta_ITPS_posterior500_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_theta_ITPS_posterior500[rr] <- NA
-    main_df$incong_correct_theta_ITPS_posterior500[rr] <- NA
-    main_df$theta_ITPS_posterior500_difference_score[rr] <- NA
-  }
-}
-
-#####################################################################################################
-#################### alpha MFC
-### Loading EEG alpha power data
-eeg_alpha_power_mfc250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/MFC/250/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_alpha_power_mfc250 <- eeg_alpha_power_mfc250[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_alpha_power_mfc250, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_alpha_power_mfc250[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_alpha_power_mfc250[rr] <- tempDat$incong_correct_theta_power
-    main_df$alpha_power_mfc250_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_alpha_power_mfc250[rr] <- NA
-    main_df$incong_correct_alpha_power_mfc250[rr] <- NA
-    main_df$alpha_power_mfc250_difference_score[rr] <- NA
-  }
-}
-
-### Loading EEG alpha power data
-eeg_alpha_power_mfc500 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/MFC/500/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_alpha_power_mfc500 <- eeg_alpha_power_mfc500[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_alpha_power_mfc500, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_alpha_power_mfc500[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_alpha_power_mfc500[rr] <- tempDat$incong_correct_theta_power
-    main_df$alpha_power_mfc500_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_alpha_power_mfc500[rr] <- NA
-    main_df$incong_correct_alpha_power_mfc500[rr] <- NA
-    main_df$alpha_power_mfc500_difference_score[rr] <- NA
-  }
-}
-
-### Loading EEG ITPS data
-eeg_alpha_ITPS_mfc250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/MFC/250/ITPS.csv")
-
-# Keeping the columns that we need!
-eeg_alpha_ITPS_mfc250 <- eeg_alpha_ITPS_mfc250[c("id", "incong_error_ITPS", "incong_correct_ITPS", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_alpha_ITPS_mfc250, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_alpha_ITPS_mfc250[rr] <- tempDat$incong_error_ITPS
-    main_df$incong_correct_alpha_ITPS_mfc250[rr] <- tempDat$incong_correct_ITPS
-    main_df$alpha_ITPS_mfc250_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_alpha_ITPS_mfc250[rr] <- NA
-    main_df$incong_correct_alpha_ITPS_mfc250[rr] <- NA
-    main_df$alpha_ITPS_mfc250_difference_score[rr] <- NA
-  }
-}
-
-### Loading EEG ITPS data
-eeg_alpha_ITPS_mfc500 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/MFC/500/ITPS.csv")
-
-# Keeping the columns that we need!
-eeg_alpha_ITPS_mfc500 <- eeg_alpha_ITPS_mfc500[c("id", "incong_error_ITPS", "incong_correct_ITPS", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_alpha_ITPS_mfc500, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_alpha_ITPS_mfc500[rr] <- tempDat$incong_error_ITPS
-    main_df$incong_correct_alpha_ITPS_mfc500[rr] <- tempDat$incong_correct_ITPS
-    main_df$alpha_ITPS_mfc500_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_alpha_ITPS_mfc500[rr] <- NA
-    main_df$incong_correct_alpha_ITPS_mfc500[rr] <- NA
-    main_df$alpha_ITPS_mfc500_difference_score[rr] <- NA
-  }
-}
-
-#################### alpha Posterior
-### Loading EEG alpha power data
-eeg_alpha_power_posterior250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/posterior/250/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_alpha_power_posterior250 <- eeg_alpha_power_posterior250[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_alpha_power_posterior250, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_alpha_power_posterior250[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_alpha_power_posterior250[rr] <- tempDat$incong_correct_theta_power
-    main_df$alpha_power_posterior250_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_alpha_power_posterior250[rr] <- NA
-    main_df$incong_correct_alpha_power_posterior250[rr] <- NA
-    main_df$alpha_power_posterior250_difference_score[rr] <- NA
-  }
-}
-
-### Loading EEG alpha power data
-eeg_alpha_power_posterior500 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/posterior/500/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_alpha_power_posterior500 <- eeg_alpha_power_posterior500[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_alpha_power_posterior500, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_alpha_power_posterior500[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_alpha_power_posterior500[rr] <- tempDat$incong_correct_theta_power
-    main_df$alpha_power_posterior500_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_alpha_power_posterior500[rr] <- NA
-    main_df$incong_correct_alpha_power_posterior500[rr] <- NA
-    main_df$alpha_power_posterior500_difference_score[rr] <- NA
-  }
-}
-
-### Loading EEG ITPS data
-eeg_alpha_ITPS_posterior250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/posterior/250/ITPS.csv")
-
-# Keeping the columns that we need!
-eeg_alpha_ITPS_posterior250 <- eeg_alpha_ITPS_posterior250[c("id", "incong_error_ITPS", "incong_correct_ITPS", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_alpha_ITPS_posterior250, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_alpha_ITPS_posterior250[rr] <- tempDat$incong_error_ITPS
-    main_df$incong_correct_alpha_ITPS_posterior250[rr] <- tempDat$incong_correct_ITPS
-    main_df$alpha_ITPS_posterior250_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_alpha_ITPS_posterior250[rr] <- NA
-    main_df$incong_correct_alpha_ITPS_posterior250[rr] <- NA
-    main_df$alpha_ITPS_posterior250_difference_score[rr] <- NA
-  }
-}
-
-### Loading EEG ITPS data
-eeg_alpha_ITPS_posterior500 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/posterior/500/ITPS.csv")
-
-# Keeping the columns that we need!
-eeg_alpha_ITPS_posterior500 <- eeg_alpha_ITPS_posterior500[c("id", "incong_error_ITPS", "incong_correct_ITPS", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_alpha_ITPS_posterior500, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_alpha_ITPS_posterior500[rr] <- tempDat$incong_error_ITPS
-    main_df$incong_correct_alpha_ITPS_posterior500[rr] <- tempDat$incong_correct_ITPS
-    main_df$alpha_ITPS_posterior500_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_alpha_ITPS_posterior500[rr] <- NA
-    main_df$incong_correct_alpha_ITPS_posterior500[rr] <- NA
-    main_df$alpha_ITPS_posterior500_difference_score[rr] <- NA
-  }
-}
-
-
-### Loading EEG wPLI data
-eeg_theta_wPLI_latfrontal250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/wPLI/MFC/wPLI.csv")
-
-# Keeping the columns that we need!
-eeg_theta_wPLI_latfrontal250 <- eeg_theta_wPLI_latfrontal250[c("id", "incong_error_wPLI", "incong_correct_wPLI", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_theta_wPLI_latfrontal250, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_theta_wPLI_latfrontal250[rr] <- tempDat$incong_error_wPLI
-    main_df$incong_correct_theta_wPLI_latfrontal250[rr] <- tempDat$incong_correct_wPLI
-    main_df$theta_wPLI_latfrontal250_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_theta_wPLI_latfrontal250[rr] <- NA
-    main_df$incong_correct_theta_wPLI_latfrontal250[rr] <- NA
-    main_df$theta_wPLI_latfrontal250_difference_score[rr] <- NA
-  }
-}
-
-### Loading EEG wPLI data
-eeg_alpha_wPLI_latfrontal250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/wPLI/MFC/wPLI.csv")
-
-# Keeping the columns that we need!
-eeg_alpha_wPLI_latfrontal250 <- eeg_alpha_wPLI_latfrontal250[c("id", "incong_error_wPLI", "incong_correct_wPLI", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_alpha_wPLI_latfrontal250, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_alpha_wPLI_latfrontal250[rr] <- tempDat$incong_error_wPLI
-    main_df$incong_correct_alpha_wPLI_latfrontal250[rr] <- tempDat$incong_correct_wPLI
-    main_df$alpha_wPLI_latfrontal250_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_alpha_wPLI_latfrontal250[rr] <- NA
-    main_df$incong_correct_alpha_wPLI_latfrontal250[rr] <- NA
-    main_df$alpha_wPLI_latfrontal250_difference_score[rr] <- NA
-  }
-}
 
 ### Loading EEG wPLI data
 eeg_theta_wPLI_posterior250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/wPLI/posterior/wPLI.csv")
@@ -1175,91 +651,6 @@ for (rr in 1:nrow(main_df)){
   }
 }
 
-### Loading EEG wPLI data
-eeg_alpha_wPLI_posterior250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/alpha/wPLI/posterior/wPLI.csv")
-
-# Keeping the columns that we need!
-eeg_alpha_wPLI_posterior250 <- eeg_alpha_wPLI_posterior250[c("id", "incong_error_wPLI", "incong_correct_wPLI", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_alpha_wPLI_posterior250, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_alpha_wPLI_posterior250[rr] <- tempDat$incong_error_wPLI
-    main_df$incong_correct_alpha_wPLI_posterior250[rr] <- tempDat$incong_correct_wPLI
-    main_df$alpha_wPLI_posterior250_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_alpha_wPLI_posterior250[rr] <- NA
-    main_df$incong_correct_alpha_wPLI_posterior250[rr] <- NA
-    main_df$alpha_wPLI_posterior250_difference_score[rr] <- NA
-  }
-}
-
-#### Exploratory ones
-### Loading EEG wPLI data
-eeg_theta_wPLI_21_25_250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/wPLI/21_25/wPLI.csv")
-
-# Keeping the columns that we need!
-eeg_theta_wPLI_21_25_250 <- eeg_theta_wPLI_21_25_250[c("id", "incong_error_wPLI", "incong_correct_wPLI", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_theta_wPLI_21_25_250, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_theta_wPLI_21_25_250[rr] <- tempDat$incong_error_wPLI
-    main_df$incong_correct_theta_wPLI_21_25_250[rr] <- tempDat$incong_correct_wPLI
-    main_df$theta_wPLI_21_25_250_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_theta_wPLI_21_25_250[rr] <- NA
-    main_df$incong_correct_theta_wPLI_21_25_250[rr] <- NA
-    main_df$theta_wPLI_21_25_250_difference_score[rr] <- NA
-  }
-}
-
-### Loading EEG theta power data
-eeg_theta_power_3_18_20_250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/3_18_20/250/theta_power.csv")
-
-# Keeping the columns that we need!
-eeg_theta_power_3_18_20_250 <- eeg_theta_power_3_18_20_250[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_theta_power_3_18_20_250, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_theta_power_3_18_20_250[rr] <- tempDat$incong_error_theta_power
-    main_df$incong_correct_theta_power_3_18_20_250[rr] <- tempDat$incong_correct_theta_power
-    main_df$theta_power_3_18_20_250_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_theta_power_3_18_20_250[rr] <- NA
-    main_df$incong_correct_theta_power_3_18_20_250[rr] <- NA
-    main_df$theta_power_3_18_20_250_difference_score[rr] <- NA
-  }
-}
-
-### Loading EEG theta itps data
-eeg_theta_itps_3_18_20_250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/3_18_20/250/ITPS.csv")
-
-# Keeping the columns that we need!
-eeg_theta_itps_3_18_20_250 <- eeg_theta_itps_3_18_20_250[c("id", "incong_error_ITPS", "incong_correct_ITPS", "difference_score")]
-
-# adding new columns to the "main_df" dataframe from eeg_erp
-for (rr in 1:nrow(main_df)){
-  temp_id <- main_df$participant_id[rr]
-  tempDat <- filter(eeg_theta_itps_3_18_20_250, id == temp_id)
-  if (nrow(tempDat) == 1){
-    main_df$incong_error_theta_itps_3_18_20_250[rr] <- tempDat$incong_error_ITPS
-    main_df$incong_correct_theta_itps_3_18_20_250[rr] <- tempDat$incong_correct_ITPS
-    main_df$theta_itps_3_18_20_250_difference_score[rr] <- tempDat$difference_score
-  } else if (nrow(tempDat) == 0){
-    main_df$incong_error_theta_itps_3_18_20_250[rr] <- NA
-    main_df$incong_correct_theta_itps_3_18_20_250[rr] <- NA
-    main_df$theta_itps_3_18_20_250_difference_score[rr] <- NA
-  }
-}
-
 ####################################################################
 # Removing outliers for variables of interest
 # list of variables of interest: memoryBias_score, d_prime_error, d_prime_correct, post_d_prime_error, post_d_prime_correct, scaared_b_scrdSoc_s1_r1_e1, scaared_b_scrdTotal_s1_r1_e1, scaared_b_scrdGA_s1_r1_e1, d_prime_error_minus_correct ,post_d_prime_error_minus_correct, unfriendly_error_minus_correct, unfriendly_post_error_minus_correct!
@@ -1267,7 +658,7 @@ mean_memoryBias_score <- mean(as.numeric(main_df$memoryBias_score), na.rm = TRUE
 sd_memoryBias_score_threeTimes <- 3*sd(as.numeric(main_df$memoryBias_score), na.rm = TRUE)
 
 for (zesht4 in 1:nrow(main_df)){
-  if (!is.na(as.numeric(main_df$memoryBias_score[zesht4])) && !is.na(as.numeric(main_df$error_hitRate[zesht4])) && !is.na(as.numeric(main_df$correct_hitRate[zesht4])) && !is.na(as.numeric(main_df$hitRate_error_minus_correct[zesht4])) && !is.na(as.numeric(main_df$hitRate_post_error_minus_correct[zesht4])) && !is.na(as.numeric(main_df$post_error_hitRate[zesht4])) && !is.na(as.numeric(main_df$post_correct_hitRate[zesht4])) && !is.na(as.numeric(main_df$d_prime_error_minus_correct[zesht4])) && !is.na(as.numeric(main_df$post_d_prime_correct[zesht4])) && !is.na(as.numeric(main_df$d_prime_correct[zesht4])) && !is.na(as.numeric(main_df$post_d_prime_error[zesht4])) && !is.na(as.numeric(main_df$d_prime_error[zesht4])) && !is.na(as.numeric(main_df$d_prime_post_error_minus_correct[zesht4])) && !is.na(as.numeric(main_df$scaared_b_scrdSoc_s1_r1_e1[zesht4])) && !is.na(as.numeric(main_df$scaared_b_scrdTotal_s1_r1_e1[zesht4])) && !is.na(as.numeric(main_df$scaared_b_scrdGA_s1_r1_e1[zesht4])) && !is.na(as.numeric(main_df$hitRate_error_minus_correct[zesht4])) && !is.na(as.numeric(main_df$bfne_b_scrdTotal_s1_r1_e1[zesht4]))){
+  if (!is.na(as.numeric(main_df$memoryBias_score[zesht4])) && !is.na(as.numeric(main_df$error_hitRate[zesht4])) && !is.na(as.numeric(main_df$correct_hitRate[zesht4])) && !is.na(as.numeric(main_df$hitRate_error_minus_correct[zesht4])) && !is.na(as.numeric(main_df$hitRate_post_error_minus_correct[zesht4])) && !is.na(as.numeric(main_df$post_error_hitRate[zesht4])) && !is.na(as.numeric(main_df$post_correct_hitRate[zesht4])) && !is.na(as.numeric(main_df$scaared_b_scrdSoc_s1_r1_e1[zesht4])) && !is.na(as.numeric(main_df$scaared_b_scrdTotal_s1_r1_e1[zesht4])) && !is.na(as.numeric(main_df$scaared_b_scrdGA_s1_r1_e1[zesht4])) && !is.na(as.numeric(main_df$hitRate_error_minus_correct[zesht4])) && !is.na(as.numeric(main_df$bfne_b_scrdTotal_s1_r1_e1[zesht4]))){
     if (as.numeric(main_df$memoryBias_score[zesht4]) >= (mean_memoryBias_score - sd_memoryBias_score_threeTimes) && as.numeric(main_df$memoryBias_score[zesht4]) <= (mean_memoryBias_score + sd_memoryBias_score_threeTimes)){
       main_df$memoryBias_score[zesht4] <- as.numeric(main_df$memoryBias_score[zesht4])
     } else {
@@ -1278,42 +669,6 @@ for (zesht4 in 1:nrow(main_df)){
       main_df$error_hitRate[zesht4] <- as.numeric(main_df$error_hitRate[zesht4])
     } else {
       main_df$error_hitRate[zesht4] <- NA
-    }
-
-    if (as.numeric(main_df$d_prime_error[zesht4]) >= (mean(as.numeric(main_df$d_prime_error), na.rm = TRUE) - (3*sd(as.numeric(main_df$d_prime_error), na.rm = TRUE))) && as.numeric(main_df$d_prime_error[zesht4]) <= (mean(as.numeric(main_df$d_prime_error), na.rm = TRUE) + (3*sd(as.numeric(main_df$d_prime_error), na.rm = TRUE)))){
-      main_df$d_prime_error[zesht4] <- as.numeric(main_df$d_prime_error[zesht4])
-    } else {
-      main_df$d_prime_error[zesht4] <- NA
-    }
-
-    if (as.numeric(main_df$post_d_prime_error[zesht4]) >= (mean(as.numeric(main_df$post_d_prime_error), na.rm = TRUE) - (3*sd(as.numeric(main_df$post_d_prime_error), na.rm = TRUE))) && as.numeric(main_df$post_d_prime_error[zesht4]) <= (mean(as.numeric(main_df$post_d_prime_error), na.rm = TRUE) + (3*sd(as.numeric(main_df$post_d_prime_error), na.rm = TRUE)))){
-      main_df$post_d_prime_error[zesht4] <- as.numeric(main_df$post_d_prime_error[zesht4])
-    } else {
-      main_df$post_d_prime_error[zesht4] <- NA
-    }
-
-    if (as.numeric(main_df$d_prime_post_error_minus_correct[zesht4]) >= (mean(as.numeric(main_df$d_prime_post_error_minus_correct), na.rm = TRUE) - (3*sd(as.numeric(main_df$d_prime_post_error_minus_correct), na.rm = TRUE))) && as.numeric(main_df$d_prime_post_error_minus_correct[zesht4]) <= (mean(as.numeric(main_df$d_prime_post_error_minus_correct), na.rm = TRUE) + (3*sd(as.numeric(main_df$d_prime_post_error_minus_correct), na.rm = TRUE)))){
-      main_df$d_prime_post_error_minus_correct[zesht4] <- as.numeric(main_df$d_prime_post_error_minus_correct[zesht4])
-    } else {
-      main_df$d_prime_post_error_minus_correct[zesht4] <- NA
-    }
-
-    if (as.numeric(main_df$d_prime_error_minus_correct[zesht4]) >= (mean(as.numeric(main_df$d_prime_error_minus_correct), na.rm = TRUE) - (3*sd(as.numeric(main_df$d_prime_error_minus_correct), na.rm = TRUE))) && as.numeric(main_df$d_prime_error_minus_correct[zesht4]) <= (mean(as.numeric(main_df$d_prime_error_minus_correct), na.rm = TRUE) + (3*sd(as.numeric(main_df$d_prime_error_minus_correct), na.rm = TRUE)))){
-      main_df$d_prime_error_minus_correct[zesht4] <- as.numeric(main_df$d_prime_error_minus_correct[zesht4])
-    } else {
-      main_df$d_prime_error_minus_correct[zesht4] <- NA
-    }
-
-    if (as.numeric(main_df$post_d_prime_correct[zesht4]) >= (mean(as.numeric(main_df$post_d_prime_correct), na.rm = TRUE) - (3*sd(as.numeric(main_df$post_d_prime_correct), na.rm = TRUE))) && as.numeric(main_df$post_d_prime_correct[zesht4]) <= (mean(as.numeric(main_df$post_d_prime_correct), na.rm = TRUE) + (3*sd(as.numeric(main_df$post_d_prime_correct), na.rm = TRUE)))){
-      main_df$post_d_prime_correct[zesht4] <- as.numeric(main_df$post_d_prime_correct[zesht4])
-    } else {
-      main_df$post_d_prime_correct[zesht4] <- NA
-    }
-
-    if (as.numeric(main_df$d_prime_correct[zesht4]) >= (mean(as.numeric(main_df$d_prime_correct), na.rm = TRUE) - (3*sd(as.numeric(main_df$d_prime_correct), na.rm = TRUE))) && as.numeric(main_df$d_prime_correct[zesht4]) <= (mean(as.numeric(main_df$d_prime_correct), na.rm = TRUE) + (3*sd(as.numeric(main_df$d_prime_correct), na.rm = TRUE)))){
-      main_df$d_prime_correct[zesht4] <- as.numeric(main_df$d_prime_correct[zesht4])
-    } else {
-      main_df$d_prime_correct[zesht4] <- NA
     }
 
     if (as.numeric(main_df$correct_hitRate[zesht4]) >= (mean(as.numeric(main_df$correct_hitRate), na.rm = TRUE) - (3*sd(as.numeric(main_df$correct_hitRate), na.rm = TRUE))) && as.numeric(main_df$correct_hitRate[zesht4]) <= (mean(as.numeric(main_df$correct_hitRate), na.rm = TRUE) + (3*sd(as.numeric(main_df$correct_hitRate), na.rm = TRUE)))){

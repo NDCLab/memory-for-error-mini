@@ -10,7 +10,7 @@ library(dplyr)
 library(stringr)
 
 #Working directory should be the Psychopy experiment directory.
-proje_wd <- "/Users/kihossei/Documents/GitHub/memory-for-error-mini/materials/task/mini_mfe"
+proje_wd <- "/Users/kihossei/Documents/GitHub/memory-for-error-mini/materials/mini_mfe"
 setwd(proje_wd)
 
 today <- Sys.Date()

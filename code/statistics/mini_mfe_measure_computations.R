@@ -9,7 +9,7 @@ library(stringr)
 library(psycho)
 
 #Working directory should be the Psychopy experiment directory.
-proje_wd <- "/Users/kihossei/Documents/GitHub/memory-for-error-mini/materials/mini_mfe"
+proje_wd <- "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/materials/tasks/mini_mfe"
 setwd(proje_wd)
 
 input_raw_path <- paste(proje_wd, "data", sep ="/", collapse = NULL) # input data directory
@@ -18,7 +18,6 @@ output_path <- paste(proje_wd, "stat_output", sep ="/", collapse = NULL) # outpu
 proc_fileName <- "processed_data_mini_mfe_Proj.csv" # output filename
 flanker_csv_fileName <- "_mini_mfe_flankerDat.csv" # each output csv file will have this on its filename
 surprise_csv_fileName <- "_mini_mfe_surpriseDat.csv" # each output csv file will have this on its filename
-
 
 ## creating a list of all raw data csv files in the input folder.
 raw_datafiles_list <- c() # an empty list that will be filled in the next "for" loop!
@@ -31,7 +30,7 @@ for (i in 1:length(csvSelect)){
   }
 }
 # Creating the main empty dataframe that will be filled with the data from the loop below:
-main_df <- setNames(data.frame(matrix(ncol = 57, nrow = 0)), c("participant_id", "congAcc", "incongAcc",
+main_df <- setNames(data.frame(matrix(ncol = 59, nrow = 0)), c("participant_id", "congAcc", "incongAcc",
                                                                "incongruent_dat_meanRT", "errorDat_meanRT", "congruent_dat_meanRT", "corrDat_meanRT",
                                                                "congCorr_meanRT", "incongCorr_meanRT", "congCorr_logMeanRT",
                                                                "congErr_meanRT", "incongErr_meanRT", "congErr_logMeanRT", "incongErr_logMeanRT",
@@ -49,7 +48,7 @@ main_df <- setNames(data.frame(matrix(ncol = 57, nrow = 0)), c("participant_id",
                                                                "incong_pre_error_hit_num", "incong_post_error_hit_num", "incong_correct_hit_num",
                                                                "incong_pre_correct_hit_num", "incong_post_correct_hit_num", "incong_error_miss_num",
                                                                "incong_pre_error_miss_num", "incong_post_error_miss_num", "incong_correct_miss_num",
-                                                               "incong_pre_correct_miss_num", "incong_post_correct_miss_num", "num_post_error_faces"))
+                                                               "incong_pre_correct_miss_num", "incong_post_correct_miss_num", "num_post_error_faces", "number_of_removed_trials_in_the_memory_surp_based_on_rt", "overall_dPrime"))
 
 # Counters for the number of excluded people based on each criterion
 num_of_participants_removed_based_on_memory_surp_trial_removal <- 0 # Will be updated in the loop below
@@ -78,11 +77,11 @@ for (subject in 1:length(raw_datafiles_list)){
   # and therefore, we need to remove that surprise trial.
   # In this study, we will remove people based on the surprise memory task not surprise friendly task.
   # If more than 20% of surprise trials are removed, we exclude that participant.
-  number_of_removed_trials_in_the_memory_surp <- nrow(surprise_df) - (sum(surprise_df$keep_surp_memory_trial_based_on_rt))
+  number_of_removed_trials_in_the_memory_surp_based_on_rt <- nrow(surprise_df) - (sum(surprise_df$keep_surp_memory_trial_based_on_rt))
   number_of_faces_in_surp_memory_task <- nrow(surprise_df)
   twenty_percent_threshold <- round(0.2 * number_of_faces_in_surp_memory_task)
 
-  if (number_of_removed_trials_in_the_memory_surp <= twenty_percent_threshold){ # Participants who have less than twenty_percent_threshold surprise
+  if (number_of_removed_trials_in_the_memory_surp_based_on_rt <= twenty_percent_threshold){ # Participants who have less than twenty_percent_threshold surprise
     # trials removed, will be included.
 
     # Check to see if this participant has the flanker accuracy above 60%
@@ -177,8 +176,10 @@ for (subject in 1:length(raw_datafiles_list)){
             }
           }
 
+          legit_corr_incong_flankerDat <- filter(incong_corrDat, current_trial_legitResponse == 1)
+          incong_corrDat <- legit_corr_incong_flankerDat
 
-
+          error_incong_flankerDat <- legit_error_incong_flankerDat
           ### number of incong error faces identified as old
           num_incong_errorFaces_reported_old <- 0 # this is the number of incongruent error faces that they report as OLD and will be updated in the loop below:
           for (iii in 1:nrow(error_incong_flankerDat)){
@@ -411,6 +412,7 @@ for (subject in 1:length(raw_datafiles_list)){
           } # Closing the loop over surprise_df trials
 
           overall_hitRate <- (hit_num) / ((hit_num) + miss_num) # hit rate
+
           # False alaram numbers is the same for Error, and correct faces as it is the overall FA! I computed it above with "false_alrams_num" name.
           incong_error_hit_num <- num_incong_errorFaces_reported_old
           incong_error_miss_num <- num_incong_errorFaces_reported_new
@@ -446,7 +448,8 @@ for (subject in 1:length(raw_datafiles_list)){
               num_post_error_faces <- num_post_error_faces + 1
             }
           } # Closing the loop that counts the number of num_post_error_faces available in surprise_df!
-
+          overall_dPrime <- psycho::dprime(hit_num, false_alrams_num, miss_num, corr_rej_num)
+          overall_dPrime <- overall_dPrime$dprime
           #### filling the main data frame
           main_df[nrow(main_df) + 1,] <-c(participant_id, congAcc, incongAcc,
                                           incongruent_dat_meanRT, errorDat_meanRT, congruent_dat_meanRT, corrDat_meanRT,
@@ -464,7 +467,8 @@ for (subject in 1:length(raw_datafiles_list)){
                                           miss_num, corr_rej_num, incong_error_hit_num, incong_pre_error_hit_num, incong_post_error_hit_num,
                                           incong_correct_hit_num, incong_pre_correct_hit_num, incong_post_correct_hit_num, incong_error_miss_num,
                                           incong_pre_error_miss_num, incong_post_error_miss_num,
-                                          incong_correct_miss_num, incong_pre_correct_miss_num, incong_post_correct_miss_num, num_post_error_faces)
+                                          incong_correct_miss_num, incong_pre_correct_miss_num, incong_post_correct_miss_num, num_post_error_faces,
+                                          number_of_removed_trials_in_the_memory_surp_based_on_rt, overall_dPrime)
 
 
         } else { # If a participant has been excluded because they had less than 8 legit incong error faces in the surprise memory task, we add 1 to the counter below.
@@ -488,7 +492,8 @@ for (ee in 1:nrow(main_df)){
 }
 
 ### Loading RedCap questionnaire data
-redcapDat <- read.csv(file = "/Users/kihossei/OneDrive - Florida International University/Projects/Memory_for_error/redcap_data_from_sfe/202203v0socialflanke_SCRD_2022-09-23_1133.csv")
+
+redcapDat <- read.csv(file = "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/derivatives/redcap/202203v0socialflanke_SCRD_2022-09-23_1133.csv")
 
 # Keeping the columns that we need!
 redcapDat <- redcapDat[c("record_id", "demo_c_yob_s1_r1_e1", "scaared_b_scrdSoc_s1_r1_e1", "scaared_b_scrdGA_s1_r1_e1", "scaared_b_scrdTotal_s1_r1_e1", "bfne_b_scrdTotal_s1_r1_e1")]
@@ -512,9 +517,55 @@ for (rr in 1:nrow(main_df)){
   }
 }
 
+#####Temp
+
+
+### Loading RedCap questionnaire data
+redcapDat <- read.csv(file = "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/derivatives/redcap/202203v0socialflanke_SCRD_2022-09-23_1133.csv")
+
+# Keeping the columns that we need!
+redcapDat <- redcapDat[c("record_id", "epepq15_scrdTotal_s1_r1_e1")]
+
+# adding new columns to the "percent_mainDat" dataframe from redcapDat
+for (rr in 1:nrow(main_df)){
+  temp_id <- main_df$participant_id[rr]
+  tempDat <- filter(redcapDat, record_id == temp_id)
+  if (nrow(tempDat) == 1){
+    main_df$epepq15_scrdTotal_s1_r1_e1[rr] <- tempDat$epepq15_scrdTotal_s1_r1_e1
+  } else if (nrow(tempDat) == 0){
+    main_df$epepq15_scrdTotal_s1_r1_e1[rr] <- NA
+  }
+}
+
+#### main_df$epepq15_scrdTotal_s1_r1_e1
+# [1] 6.4666667 4.4666667 8.3333333 7.2666667 8.1333333 9.2000000 6.1333333
+#[8] 6.0000000        NA 9.4000000 8.4666667 5.8000000        NA 2.5333333
+#[15] 5.4000000 8.6666667 7.1333333 5.2000000 7.6666667        NA 8.2666667
+#[22] 6.5333333 9.8000000 1.8666667 5.2000000 5.8000000 6.4666667 9.6000000
+#[29] 1.0666667 8.7333333 0.7333333 3.0666667
+#> mean(main_df$epepq15_scrdTotal_s1_r1_e1)
+#[1] NA
+#> mean(main_df$epepq15_scrdTotal_s1_r1_e1, na.rm = TRUE)
+#[1] 6.324138
+#> min(main_df$epepq15_scrdTotal_s1_r1_e1, na.rm = TRUE)
+# [1] 0.7333333
+# max(main_df$epepq15_scrdTotal_s1_r1_e1, na.rm = TRUE)
+#[1] 9.8
+# 10 out of 32 are below 6 and 3 NAs! 10/19 = 0.5263158 in mini mfe
+# 37 out of 80 are below 6 and 1 NA! 37/42 = 0.8809524 in mfe_b
+# tedade pep kamtar az 6 dar mini mfe kamtar az mfe_b hastesh ke ye jorayi tasdigh mikone ke aksare afrad pep balayi dar mini mfe dashte and.
+
+
+
+##### end of temp
+
+
+
+
+
 
 ### Loading EEG ERP data
-eeg_ern <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/eeg_erp_output/mini_mfe_erpDat_ern_compMeans.csv")
+eeg_ern <- read.csv(file = "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/derivatives/eeg/erp_output/mini_mfe_erpDat_ERN_compMeans.csv")
 
 # Keeping the columns that we need!
 eeg_ern <- eeg_ern[c("id", "ERN", "CRN", "deltaERN")]
@@ -534,12 +585,34 @@ for (rr in 1:nrow(main_df)){
   }
 }
 
+##################################################################
+### Loading EEG ERP data # N170
+
+eeg_n170 <- read.csv(file = "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/derivatives/eeg/erp_output/mini_mfe_erpDat_N170_compMeans.csv")
+
+# Keeping the columns that we need!
+eeg_n170 <- eeg_n170[c("id", "error_N170", "correct_N170", "deltaN170")]
+
+# adding new columns to the "percent_mainDat" dataframe from eeg_erp
+for (rr in 1:nrow(main_df)){
+  temp_id <- main_df$participant_id[rr]
+  tempDat <- filter(eeg_n170, id == temp_id)
+  if (nrow(tempDat) == 1){
+    main_df$N170_error[rr] <- tempDat$error_N170
+    main_df$N170_correct[rr] <- tempDat$correct_N170
+    main_df$N170_delta[rr] <- tempDat$deltaN170
+  } else if (nrow(tempDat) == 0){
+    main_df$N170_error[rr] <- NA
+    main_df$N170_correct[rr] <- NA
+    main_df$N170_delta[rr] <- NA
+  }
+}
 
 
 ##########################################################################################################################
 #################### Theta MFC
 ### Loading EEG Theta power data
-eeg_theta_power_mfc250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/MFC/250/theta_power.csv")
+eeg_theta_power_mfc250 <- read.csv(file = "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/MFC/250/theta_power.csv")
 
 # Keeping the columns that we need!
 eeg_theta_power_mfc250 <- eeg_theta_power_mfc250[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
@@ -561,7 +634,7 @@ for (rr in 1:nrow(main_df)){
 
 
 ### Loading EEG ITPS data
-eeg_theta_ITPS_mfc250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/MFC/250/ITPS.csv")
+eeg_theta_ITPS_mfc250 <- read.csv(file = "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/MFC/250/ITPS.csv")
 
 # Keeping the columns that we need!
 eeg_theta_ITPS_mfc250 <- eeg_theta_ITPS_mfc250[c("id", "incong_error_ITPS", "incong_correct_ITPS", "difference_score")]
@@ -585,7 +658,7 @@ for (rr in 1:nrow(main_df)){
 
 #################### Theta Posterior
 ### Loading EEG Theta power data
-eeg_theta_power_posterior250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/posterior/250/theta_power.csv")
+eeg_theta_power_posterior250 <- read.csv(file = "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/posterior/250/theta_power.csv")
 
 # Keeping the columns that we need!
 eeg_theta_power_posterior250 <- eeg_theta_power_posterior250[c("id", "incong_error_theta_power", "incong_correct_theta_power", "difference_score")]
@@ -608,7 +681,7 @@ for (rr in 1:nrow(main_df)){
 
 
 ### Loading EEG ITPS data
-eeg_theta_ITPS_posterior250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/posterior/250/ITPS.csv")
+eeg_theta_ITPS_posterior250 <- read.csv(file = "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/posterior/250/ITPS.csv")
 
 # Keeping the columns that we need!
 eeg_theta_ITPS_posterior250 <- eeg_theta_ITPS_posterior250[c("id", "incong_error_ITPS", "incong_correct_ITPS", "difference_score")]
@@ -631,7 +704,7 @@ for (rr in 1:nrow(main_df)){
 
 
 ### Loading EEG wPLI data
-eeg_theta_wPLI_posterior250 <- read.csv(file = "/Users/kihossei/Documents/GitHub/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/wPLI/posterior/wPLI.csv")
+eeg_theta_wPLI_posterior250 <- read.csv(file = "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/derivatives/eeg/TF_outputs/csv_for_stat/theta/wPLI/posterior/wPLI.csv")
 
 # Keeping the columns that we need!
 eeg_theta_wPLI_posterior250 <- eeg_theta_wPLI_posterior250[c("id", "incong_error_wPLI", "incong_correct_wPLI", "difference_score")]
@@ -653,7 +726,7 @@ for (rr in 1:nrow(main_df)){
 
 ####################################################################
 # Removing outliers for variables of interest
-# list of variables of interest: memoryBias_score, d_prime_error, d_prime_correct, post_d_prime_error, post_d_prime_correct, scaared_b_scrdSoc_s1_r1_e1, scaared_b_scrdTotal_s1_r1_e1, scaared_b_scrdGA_s1_r1_e1, d_prime_error_minus_correct ,post_d_prime_error_minus_correct, unfriendly_error_minus_correct, unfriendly_post_error_minus_correct!
+
 mean_memoryBias_score <- mean(as.numeric(main_df$memoryBias_score), na.rm = TRUE)
 sd_memoryBias_score_threeTimes <- 3*sd(as.numeric(main_df$memoryBias_score), na.rm = TRUE)
 
@@ -727,12 +800,11 @@ for (zesht4 in 1:nrow(main_df)){
 
 
 # Replacing NAs for pre/post error/correct hitRAtes, d's when they are less than 8 (i.e, cutoff for the number of incongruent errors)!
-# The correct way is to do this for post-correct ones too. However, we already that is not an issue for this dataset. So, I do this just for post-error ones.
-# I don't do this for pre- ones, as I don't run stats on them.
+
 for (j in 1:nrow(main_df)){
   if (is.na(main_df$num_post_error_faces[j]) || main_df$num_post_error_faces[j] < 8 ){
     main_df$post_error_hitRate[j] <- NA
-    main_df$post_d_prime_error[j] <- NA
+    #main_df$post_d_prime_error[j] <- NA
   }
 }
 ####################

@@ -12,7 +12,7 @@ clc % clear matlab command window
 
 % MUST EDIT THIS
 %running in "EEG_training" folder on your computer
-main_dir = '/Users/kihossei/Documents/GitHub/memory-for-error-mini';
+main_dir = '/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini';
 
 % Setting up other things
 
@@ -29,7 +29,7 @@ rmpath([main_dir filesep 'code' filesep 'eeg' filesep 'eeglab13_4_4b' filesep 'f
 data_location = [main_dir filesep 'derivatives' filesep 'eeg' filesep 'preprocessed' filesep 'processed_data'];
 
 % 2. Enter the path of the folder where you want to save the processed data
-output_location = [main_dir filesep 'derivatives' filesep 'eeg' filesep 'eeg_erp_output'];
+output_location = [main_dir filesep 'derivatives' filesep 'eeg' filesep 'erp_output'];
 
 % 3. Enter the path of the channel location file
 channel_locations = [main_dir filesep 'code' filesep 'eeg' filesep 'MADE-EEG-preprocessing-pipeline' filesep 'chan_locs_files' filesep 'CACS-128-X7-FIXED-64only.bvef'];

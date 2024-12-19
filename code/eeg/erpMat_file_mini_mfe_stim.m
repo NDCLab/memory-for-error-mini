@@ -103,8 +103,8 @@ for i = 1:length(datafile_names)
         % congruency:  1= congruent; 0 = incongruent
         % accuracy: 1 = corect; 0 = error
         
-        %selecting only response epochs
-        eventType  = 2;
+        %selecting only stimulus epochs
+        eventType  = 1;
 
         if (c==1) %incon-error
             congruency = 0;
@@ -133,7 +133,7 @@ for i = 1:length(datafile_names)
         meanEpochs = mean(EEG1.data, 3); % Kia: averages across epochs of this condition
         
         %store data for this condition in array
-        mini_mfe_erpDat_resp(pIdx,c,:,:)= meanEpochs;
+        mini_mfe_erpDat_stim(pIdx,c,:,:)= meanEpochs;
         
 
     %end loop through conditions
@@ -143,7 +143,4 @@ for i = 1:length(datafile_names)
 end
 
 %save the erps and subject list
-save([output_location filesep 'mini_mfe_erpDat_resp.mat'],'mini_mfe_erpDat_resp', 'datafile_names')
-
-
-
+save([output_location filesep 'mini_mfe_erpDat_stim.mat'],'mini_mfe_erpDat_stim', 'datafile_names')

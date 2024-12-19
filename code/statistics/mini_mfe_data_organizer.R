@@ -10,11 +10,8 @@ library(dplyr)
 library(stringr)
 
 #Working directory should be the Psychopy experiment directory.
-proje_wd <- "/Users/kihossei/Documents/GitHub/memory-for-error-mini/materials/mini_mfe"
+proje_wd <- "/Users/kihossei/Library/CloudStorage/GoogleDrive-hosseinikianoosh@gmail.com/My Drive/My Digital Life/Professional/Github_Repos/memory-for-error-mini/materials/tasks/mini_mfe"
 setwd(proje_wd)
-
-today <- Sys.Date()
-today <- format(today, "%Y%m%d")
 
 # Defining the input and output folders.
 input_path <- paste(proje_wd, "data", sep ="/", collapse = NULL) # input data directory
@@ -103,7 +100,7 @@ for(subject in 1:length(datafiles_list)){
   }
    flankerDat$task1_stim_keyResp.keys <- as.numeric( str_extract(flankerDat$task1_stim_keyResp.keys, '[[:digit:]]')) #extracts the first number (first response) and converts them to numeric
 
-
+  num_flanker_trial_removed <- 0
   # loop over all flanker trials.
   for (trial in 1:nrow(flankerDat)){
     current_trial_face <- flankerDat$straightFace[trial]
@@ -142,6 +139,9 @@ for(subject in 1:length(datafiles_list)){
     } else if (!is.na(flankerDat$task1_stim_keyResp.keys[trial])){ # When a response made in a flanker task trial
       current_trial_responded <- 1
       current_trial_accuracy <- flankerDat$accuracy[trial]
+      if (current_trial_rt < 0.15){
+        num_flanker_trial_removed <- num_flanker_trial_removed + 1
+      }
     }
     if (flankerDat$task_trial_loop.thisTrialN[trial] == 0){ # if the trial is the first in its block
       pre_trial_responded <- NA
@@ -203,6 +203,9 @@ for(subject in 1:length(datafiles_list)){
                                           current_trial_resp_nums, pre_trial_resp_nums, post_trial_resp_nums)
   } # Closing the loop for each trial
 
+  ### Printing output
+  print(paste("Participant ", participant_id, " had ", num_flanker_trial_removed, " of flanker trial removed due to RT."))
+  #### end of printing output
   flanker_name <- paste0(participant_id, flanker_csv_fileName, sep = "", collapse = NULL)
   write.csv(flanker_df, paste(output_path, flanker_name, sep = "/", collapse = NULL), row.names=FALSE) # Writing the flanker CSV file to disk
 

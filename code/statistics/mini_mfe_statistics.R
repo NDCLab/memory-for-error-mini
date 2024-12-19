@@ -342,6 +342,7 @@ cronbach.alpha(combined_df, standardized = FALSE, na.rm = TRUE)
 ######################################################
 
 
+
 # ERP N170 (supplementary)
 
 cor.test(as.numeric(main_df$scaared_b_scrdSoc_s1_r1_e1), as.numeric(main_df$N170_error), method = 'pearson', na.action = na.omit)

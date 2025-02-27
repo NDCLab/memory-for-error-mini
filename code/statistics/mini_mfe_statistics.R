@@ -48,6 +48,10 @@ mean(main_df$epepq15_scrdTotal_s1_r1_e1, na.rm = TRUE) #
 sd(main_df$epepq15_scrdTotal_s1_r1_e1, na.rm = TRUE) #
 median(main_df$epepq15_scrdTotal_s1_r1_e1, na.rm = TRUE) #
 
+
+sd(main_df$scaared_b_scrdSoc_s1_r1_e1)
+sd(main_df$theta_wPLI_posterior250_difference_score, na.rm = TRUE)
+sd(main_df$hitRate_error_minus_correct)
 ################### end temp
 
 
